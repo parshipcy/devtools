@@ -87,9 +87,35 @@ title → "Learn Sources"
 
 ![Debugger paused at breakpoint with Scope and Call Stack visible](assets/Screenshot%202026-09-01%20184939.png)
 
-**Key idea**
+#### Conditional Breakpoint
 
-A breakpoint allows you to inspect the state of your program at a specific moment during execution.
+A **conditional breakpoint** pauses execution only when a specified condition is `true`. It is useful when a line executes many times but you only want to debug a specific case.
+
+**How to use:**
+
+1. Right-click the line number where you want the breakpoint.
+2. Select **Add conditional breakpoint**.
+3. Enter a condition, for example:
+
+```js
+task === "999"
+```
+
+4. Run the code.
+
+If the line runs for multiple tasks:
+
+```text
+Learn JavaScript  → continue
+Learn DevTools    → continue
+999    → pause
+Learn Node.js     → continue
+```
+
+![Conditional Breakpoint](assets\Screenshot 2026-09-01 212357.png)
+
+> **Normal breakpoint:** pauses every time the line executes.
+> **Conditional breakpoint:** pauses only when the condition is `true`.
 
 ---
 
