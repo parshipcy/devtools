@@ -112,9 +112,10 @@ Learn DevTools    → continue
 Learn Node.js     → continue
 ```
 
-![Conditional Breakpoint](assets\Screenshot 2026-09-01 212357.png)
+![Conditional Breakpoint](assets/Screenshot%202026-09-01%20212357.png)
 
 > **Normal breakpoint:** pauses every time the line executes.
+
 > **Conditional breakpoint:** pauses only when the condition is `true`.
 
 ---
