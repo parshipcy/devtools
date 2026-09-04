@@ -428,3 +428,343 @@ Step Out
     ↓
 go back up one function level
 ```
+
+## Network - Part 1:
+
+The **Network** tab in Chrome DevTools is used to inspect HTTP requests made by the browser. It becomes especially important when debugging frontend ↔ backend communication with **React + Node.js**.
+
+### 1. Add an API request
+
+Add a **Load API Data** button and a result container below the task list in `index.html`:
+
+```html
+<ul id="task-list"></ul>
+
+<button id="load-data">
+    Load API Data
+</button>
+
+<div id="api-result"></div>
+```
+
+In `script.js`, add references at the top:
+
+```js
+const loadDataButton = document.getElementById("load-data");
+const apiResult = document.getElementById("api-result");
+```
+
+Then add a click handler at the bottom:
+
+```js
+loadDataButton.addEventListener("click", async () => {
+    const response = await fetch(
+        "https://jsonplaceholder.typicode.com/todos/1"
+    );
+
+    const data = await response.json();
+
+    apiResult.textContent = data.title;
+});
+```
+
+**Flow:**
+
+```text
+Click "Load API Data"
+        ↓
+fetch()
+        ↓
+HTTP request
+        ↓
+JSONPlaceholder server
+        ↓
+HTTP response
+        ↓
+response.json()
+        ↓
+Display data
+```
+
+---
+
+### 2. Open Network
+
+1. Open the page in Chrome.
+2. Press `F12` to open DevTools.
+3. Go to the **Network** tab.
+4. Refresh the page.
+
+You should see requests for resources such as:
+
+```text
+index.html
+style.css
+script.js
+```
+
+---
+
+### 3. Filter API requests
+
+At the top of Network, use filters such as:
+
+```text
+All
+Fetch/XHR
+Doc
+CSS
+JS
+Img
+```
+
+Click **Fetch/XHR** to show only API-related requests.
+
+Then click **Load API Data**.
+
+You should see a request similar to:
+
+```text
+todos/1
+```
+
+Click that request to inspect it.
+
+---
+
+### 4. Understand the request
+
+In the request details, check the following under **Headers → General**:
+
+**Request URL**
+
+```text
+https://jsonplaceholder.typicode.com/todos/1
+```
+
+This tells you **where the request was sent**.
+
+**Request Method**
+
+```text
+GET
+```
+
+We're retrieving data, so we're using GET.
+
+**Status Code**
+
+```text
+200 (This means the request succeeded.)
+```
+
+and maybe
+
+```text
+304 (The resource hasn't changed since the last time you requested it, so use your cached version.)
+```
+
+![Network tab with Fetch/XHR filter showing todos/1 request headers](assets/Screenshot%202026-09-04%20220329.png)
+
+---
+
+### 5. Inspect Response
+
+Click the **Response** tab.
+
+You should see JSON similar to:
+
+```json
+{
+    "userId": 1,
+    "id": 1,
+    "title": "delectus aut autem",
+    "completed": false
+}
+```
+
+This is the actual data returned by the server.
+
+Your JavaScript then does:
+
+```js
+const data = await response.json();
+```
+
+and gets that JSON as a JavaScript object.
+
+![Response tab showing JSON from todos/1](assets/Screenshot%202026-09-04%20220609.png)
+
+---
+
+### 6. Inspect Headers
+
+Click the **Headers** tab.
+
+You'll see sections such as:
+
+```text
+General
+Request Headers
+Response Headers
+```
+
+**General** includes:
+
+```text
+Request URL
+Request Method
+Status Code
+Remote Address
+```
+
+**Request Headers** are sent **from your browser to the server**.
+
+**Response Headers** are sent **from the server back to your browser**.
+
+You don't need to memorize every header. For now, understand:
+
+```text
+Browser
+   ↓
+Request Headers
+   ↓
+Server
+   ↓
+Response Headers
+   ↓
+Browser
+```
+
+---
+
+### 7. Inspect Timing
+
+Click the **Timing** tab.
+
+You'll see a breakdown of how long different parts of the request took:
+
+```text
+Queueing
+Request sent
+Waiting for server response
+Content download
+```
+
+This becomes useful when an API feels slow.
+
+> **Network → Timing** helps determine where time was spent during a request.
+
+![Timing tab showing request duration breakdown](assets/Screenshot%202026-09-04%20220626.png)
+
+---
+
+### 8. Debug a 404 error
+
+Deliberately break the API by changing the URL:
+
+```js
+"https://jsonplaceholder.typicode.com/todos/1"
+```
+
+to:
+
+```js
+"https://jsonplaceholder.typicode.com/todos/999999"
+```
+
+Save and click **Load API Data**.
+
+In Network, you may see:
+
+```text
+404
+```
+
+Click the failed request and check:
+
+**Request URL**
+
+```text
+/todos/999999
+```
+
+Is the URL correct?
+
+**Status Code**
+
+```text
+404 Not Found
+```
+
+**Response**
+
+Look at what the server returned.
+
+You've diagnosed the problem **without touching the debugger**.
+
+![Network tab showing 404 for todos/999999 request](assets/Screenshot%202026-09-04%20221612.png)
+
+Change the URL back when done:
+
+```js
+"https://jsonplaceholder.typicode.com/todos/1"
+```
+
+---
+
+### 9. Important HTTP status codes
+
+| Status | Meaning             |
+| ------ | ------------------- |
+| `200`  | Success             |
+| `201`  | Created             |
+| `204`  | Success, no content |
+| `304`  | Not Modified        |
+| `400`  | Bad request         |
+| `401`  | Not authenticated   |
+| `403`  | Forbidden           |
+| `404`  | Not found           |
+| `500`  | Server error        |
+
+These become extremely important when working with **Node.js/Express APIs**.
+
+---
+
+### 10. Preserve log
+
+In Network, enable **Preserve log**.
+
+Then reload the page.
+
+Normally, refreshing clears previous requests. **Preserve log** keeps requests in the Network panel across page navigations and reloads.
+
+This is useful when debugging redirects, authentication, or requests that happen during page navigation.
+
+---
+
+### 11. Network debugging workflow
+
+When an API isn't working:
+
+```text
+API not working
+      ↓
+Open Network
+      ↓
+Filter Fetch/XHR
+      ↓
+Find request
+      ↓
+Check URL
+      ↓
+Check Method
+      ↓
+Check Status Code
+      ↓
+Check Request Headers / Payload
+      ↓
+Check Response
+      ↓
+Check Timing
+```

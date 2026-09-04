@@ -1,6 +1,8 @@
 const taskForm = document.getElementById("task-form");
 const taskInput = document.getElementById("task-input");
 const taskList = document.getElementById("task-list");
+const loadDataButton = document.getElementById("load-data");
+const apiResult = document.getElementById("api-result");
 
 let tasks = [];
 
@@ -27,3 +29,13 @@ function renderTasks() {
         taskList.appendChild(li);
     });
 }
+
+loadDataButton.addEventListener("click", async () => {
+    const response = await fetch(
+        "https://jsonplaceholder.typicode.com/todos/1"
+    );
+
+    const data = await response.json();
+
+    apiResult.textContent = data.title;
+});
