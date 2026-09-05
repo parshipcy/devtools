@@ -6,17 +6,22 @@ const apiResult = document.getElementById("api-result");
 
 let tasks = [];
 
-taskForm.addEventListener("submit", (event) => {
+taskForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const title = taskInput.value.trim();
 
-    console.log("Task entered:", title);
-    console.table(tasks);
+    const formData = new FormData(taskForm);
 
-    if(!title) return;
-    tasks.push(title);
-    taskInput.value = "";
-    renderTasks();
+    const response = await fetch(
+        "https://httpbin.org/post",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    const data = await response.json();
+
+    console.log(data);
 });
 
 function renderTasks() {
@@ -32,10 +37,22 @@ function renderTasks() {
 
 loadDataButton.addEventListener("click", async () => {
     const response = await fetch(
-        "https://jsonplaceholder.typicode.com/todos/1"
+        "https://jsonplaceholder.typicode.com/posts",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: "Learning Network Tab",
+                body: "Practicing POST requests",
+                userId: 1
+            })
+        }
     );
 
     const data = await response.json();
 
+    console.log(data);
     apiResult.textContent = data.title;
 });

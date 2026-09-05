@@ -196,3 +196,141 @@ These become extremely important when working with **Node.js/Express APIs**.
 ### 7. Preserve log
 
 **Preserve log** keeps requests in the Network panel across page navigations and reloads. Normally, refreshing clears previous requests. This is useful when debugging redirects, authentication, or requests that happen during page navigation.
+
+## Network - Part 2:
+
+This part focuses on **sending data, authentication, browser behavior, and debugging network requests**.
+
+---
+
+### 1. Query Parameters
+
+Query parameters are values added to the URL to provide additional information to the server. They follow the format `/api/tasks?key=value`, and multiple parameters can be combined with `&`, such as `/api/tasks?userId=1&completed=true`.
+
+In DevTools, find them under **Network → Request → Headers** in the **Request URL**. You can also inspect query parameters under the URL/query-parameter section, depending on the browser version.
+
+Common uses include filtering by category, pagination, search terms, and filtering by user ID.
+
+> **Query parameters are data sent through the URL.**
+
+![Network Headers showing GET request with userId=1 query parameter](assets/Screenshot%202026-09-05%20233805.png)
+
+---
+
+### 2. POST Request
+
+`POST` is an HTTP method commonly used when the client wants to **send data to the server**, often to create something.
+
+**GET** sends a request to retrieve data. **POST** sends a request along with data in the body. A typical use is creating a resource on the server by sending a JSON body with fields such as a title.
+
+A successful POST often returns status code **201 Created**.
+
+> **`GET` is commonly used to retrieve data.**
+> **`POST` is commonly used to send/create data.**
+
+![Network Headers showing POST request with 201 Created status](assets/Screenshot%202026-09-05%20233850.png)
+
+---
+
+### 3. Request Payload / Body
+
+The **request body** (also called the **request payload**) contains data sent from the client to the server, typically as JSON for API requests.
+
+In DevTools, inspect it under **Network → Request → Payload**.
+
+**Important distinction:** query parameters travel in the URL (e.g. `/api/tasks?userId=1`), while the request payload travels in the request body.
+
+> **Query parameters → URL**
+> **Payload → Request body**
+
+---
+
+### 4. Form Data
+
+**Form Data** is another way of sending data, particularly when working with HTML forms and file uploads. In DevTools, inspect it under **Network → Request → Payload → Form Data**.
+
+**Form Data vs JSON:** JSON sends structured data as a stringified object in the request body. Form Data sends key-value pairs, and is the standard approach for HTML forms and file uploads (e.g. name, email, and profile image fields).
+
+> **Form Data is commonly used for HTML forms and file uploads.**
+
+---
+
+### 5. Response Preview vs Response
+
+After sending a request, the server sends a response.
+
+The **Response** tab shows the response body as received from the server.
+
+The **Preview** tab provides a more convenient, structured way to inspect the same data (e.g. as an expandable object tree for JSON).
+
+> **Response = response body**
+> **Preview = convenient structured view of the response**
+
+![Preview tab showing structured JSON object](assets/Screenshot%202026-09-05%20234934.png)
+
+![Response tab showing raw JSON response body](assets/Screenshot%202026-09-05%20234948.png)
+
+---
+
+### 6. Cookies
+
+Cookies are small pieces of data stored by the browser for a website. They are commonly used for sessions, authentication, and user preferences.
+
+**Set-Cookie** — the server tells the browser to store a cookie.
+
+**Cookie** — on later requests, the browser sends the stored cookie back to the server.
+
+In DevTools, inspect cookies under **Application → Cookies**. You can also see cookies associated with requests under **Network → Request → Headers**.
+
+> **`Set-Cookie` → server tells browser to store a cookie.**
+> **`Cookie` → browser sends the cookie to the server.**
+
+---
+
+### 7. Authentication Headers / Bearer Token
+
+When an API requires authentication, the client often sends an authentication token in the **Authorization** header, commonly as `Authorization: Bearer <token>`.
+
+A typical flow: the user logs in, the server verifies credentials and returns a token, the frontend stores the token, and subsequent API requests include it in the Authorization header for the backend to verify.
+
+In DevTools, inspect it under **Network → Request → Headers → Request Headers**.
+
+Common related status codes:
+
+* **401** — authentication missing or invalid
+* **403** — authenticated but not allowed
+
+> **`Authorization: Bearer <token>` is a common way to send an access token to an API.**
+
+---
+
+### 8. Network Throttling
+
+Network throttling lets you **simulate a slow or unreliable network**. In the Network tab, the **Throttling** dropdown offers options such as **No throttling**, **Fast 4G**, **Slow 4G**, and **Offline**.
+
+On a slow network, API requests take longer, which helps test loading states and how the UI behaves while waiting for data.
+
+> **Throttling is used to simulate different network conditions.**
+
+---
+
+### 9. Disable Cache
+
+Browsers cache resources such as HTML, CSS, JavaScript, and images to make websites load faster. During development, you may change a file and still see an older cached version because the browser serves it from cache instead of fetching a fresh copy.
+
+**Disable cache** in the Network tab forces the browser to fetch resources from the network rather than cache. This option applies while DevTools is open.
+
+> **Disable cache is useful when debugging whether the browser is serving an old resource.**
+
+---
+
+### 10. Request Blocking / Replaying
+
+**Request Blocking** lets you deliberately block a network request to see how your application behaves when that resource or API is unavailable.
+
+**Replay Request** lets you resend a previous request from DevTools. This is useful for checking whether a request consistently fails, whether the server returns the same response, or whether changing request data changes the result.
+
+> **Request blocking helps you simulate failures.**
+> **Request replaying helps you reproduce a request.**
+
+![Network toolbar with throttling, Disable cache, and request blocking options](assets/Screenshot%202026-09-06%20000046.png)
